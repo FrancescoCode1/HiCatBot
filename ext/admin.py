@@ -3,7 +3,7 @@ import hikari
 import lightbulb
 import os
 import dotenv
-
+import enum
 dotenv.load_dotenv()
 plugin = lightbulb.Plugin("admin")
 GUILD_ID = int(os.environ["DISCORD_GUILD"])
@@ -49,10 +49,21 @@ async def on_mute(ctx: lightbulb.SlashContext) -> None:
     rawtime = ctx.options.duration #time in seconds
     duration = int(rawtime) * 60 * 60 #time in hours
     await ctx.bot.rest.add_role_to_member(GUILD_ID, user=member, role=937724392824266814)
-    await ctx.respond(f"User {member.mention} has been muted for {duration} hours")
+    await ctx.respond(f"User {member.mention} has been muted for {rawtime} hours")
     time.sleep(duration)
     await ctx.bot.rest.remove_role_from_member(GUILD_ID, user=member, role=937724392824266814)
     await ctx.respond(f"User {member.mention} has been unmuted")
+
+@plugin.command
+@lightbulb.command("fetch", "fetch users")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def on_fetch(ctx: lightbulb.SlashContext) -> None:
+    fetched_list = ctx.bot.rest.fetch_members(guild=GUILD_ID)
+    new_string = "\n".join([str(x) async for x in fetched_list])
+    await ctx.respond(new_string)
+
+
+
 
 
 
