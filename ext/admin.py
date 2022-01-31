@@ -1,3 +1,4 @@
+import time
 import hikari
 import lightbulb
 import os
@@ -5,7 +6,7 @@ import dotenv
 
 dotenv.load_dotenv()
 plugin = lightbulb.Plugin("admin")
-
+GUILD_ID = int(os.environ["DISCORD_GUILD"])
 
 @plugin.command
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.permissions.Permissions.KICK_MEMBERS))
@@ -17,7 +18,7 @@ async def on_tempban(ctx: lightbulb.SlashContext) -> None:
     try:
         member = ctx.options.user
         reason = ctx.options.reason
-        await ctx.bot.rest.ban_user(guild=int(os.environ["DISCORD_GUILD"]), user=member, reason=reason)
+        await ctx.bot.rest.ban_user(guild=GUILD_ID, user=member, reason=reason)
         await ctx.respond("Banned " + member.mention + " Reason " + reason)
     except:
         await ctx.respond("Something went wrong. Error_1")
@@ -33,10 +34,27 @@ async def on_kick(ctx: lightbulb.SlashContext) -> None:
     try:
         member = ctx.options.user
         reason = ctx.options.reason
-        await ctx.bot.rest.kick_user(guild=int(os.environ["DISCORD_GUILD"]), user=member, reason=reason)
+        await ctx.bot.rest.kick_user(guild=GUILD_ID, user=member, reason=reason)
         await ctx.respond("Kicked " + member.mention + " Reason " + reason)
     except:
         await ctx.respond("something went wrong. Error_2")
+
+@plugin.command
+@lightbulb.option("user", "specify user to mute", type=hikari.User)
+@lightbulb.option("duration", "Specify duration to mute", type=int)
+@lightbulb.command("mute", "temporary mute a user")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def on_mute(ctx: lightbulb.SlashContext) -> None:
+    member = ctx.options.user
+    rawtime = ctx.options.duration #time in seconds
+    duration = int(rawtime) * 60 * 60 #time in hours
+    await ctx.bot.rest.add_role_to_member(GUILD_ID, user=member, role=937724392824266814)
+    await ctx.respond(f"User {member.mention} has been muted for {duration} hours")
+    time.sleep(duration)
+    await ctx.bot.rest.remove_role_from_member(GUILD_ID, user=member, role=937724392824266814)
+    await ctx.respond(f"User {member.mention} has been unmuted")
+
+
 
 
 def load(bot):
