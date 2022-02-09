@@ -3,7 +3,7 @@ import hikari
 import lightbulb
 import os
 import dotenv
-import enum
+
 dotenv.load_dotenv()
 plugin = lightbulb.Plugin("admin")
 GUILD_ID = int(os.environ["DISCORD_GUILD"])
@@ -39,7 +39,14 @@ async def on_kick(ctx: lightbulb.SlashContext) -> None:
     except:
         await ctx.respond("something went wrong. Error_2")
 
+
+@lightbulb.Check
+def check_specific_channel(context: lightbulb.Context) -> bool:
+    return context.channel_id == 937762815803011072
+
+
 @plugin.command
+@lightbulb.add_checks(check_specific_channel)
 @lightbulb.option("user", "specify user to mute", type=hikari.User)
 @lightbulb.option("duration", "Specify duration to mute", type=int)
 @lightbulb.command("mute", "temporary mute a user")
@@ -54,18 +61,18 @@ async def on_mute(ctx: lightbulb.SlashContext) -> None:
     await ctx.bot.rest.remove_role_from_member(GUILD_ID, user=member, role=937724392824266814)
     await ctx.respond(f"User {member.mention} has been unmuted")
 
+
 @plugin.command
 @lightbulb.command("fetch", "fetch users")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_fetch(ctx: lightbulb.SlashContext) -> None:
     fetched_list = ctx.bot.rest.fetch_members(guild=GUILD_ID)
     new_string = "\n".join([str(x) async for x in fetched_list])
-    await ctx.respond(new_string)
-
-
-
-
-
+    embed = hikari.Embed(title="Server Info", description="Show users of this Server", color=[255, 255, 255])
+    embed.add_field(name="Members", value="Members", inline=True)
+    embed.add_field(name="ex", value="23", inline=True)
+    await ctx.respond(embed)
+    #await ctx.respond(new_string)
 
 
 def load(bot):
