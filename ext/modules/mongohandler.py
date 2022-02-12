@@ -10,7 +10,7 @@ PASSWORD = quote_plus(os.environ["PASSWORD"])
 
 
 class Mongo:
-    def __init__(self, db: typing.Optional[client.dbname] = None, client: typing.Optional[MongoClient] = None) :
+    def __init__(self, db: typing.Optional = None, client: typing.Optional[MongoClient] = None) :
         self.client = client
         self.db = db
 
