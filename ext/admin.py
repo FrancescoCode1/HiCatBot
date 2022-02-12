@@ -3,10 +3,23 @@ import hikari
 import lightbulb
 import os
 import dotenv
+from ext.modules import mongohandler
+
 
 dotenv.load_dotenv()
 plugin = lightbulb.Plugin("admin")
 GUILD_ID = int(os.environ["DISCORD_GUILD"])
+
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.permissions.Permissions.ADMINISTRATOR))
+@lightbulb.command("dbstatus", "display status of the database")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def on_dbstatus(ctx: lightbulb.SlashContext) -> None:
+    s = mongohandler.Mongo()
+    s.setup()
+    print(s.status())
+
 
 @plugin.command
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.permissions.Permissions.KICK_MEMBERS))
@@ -20,7 +33,7 @@ async def on_tempban(ctx: lightbulb.SlashContext) -> None:
         reason = ctx.options.reason
         await ctx.bot.rest.ban_user(guild=GUILD_ID, user=member, reason=reason)
         await ctx.respond("Banned " + member.mention + " Reason " + reason)
-    except:
+    except hikari.HikariError:
         await ctx.respond("Something went wrong. Error_1")
 
 
@@ -36,7 +49,7 @@ async def on_kick(ctx: lightbulb.SlashContext) -> None:
         reason = ctx.options.reason
         await ctx.bot.rest.kick_user(guild=GUILD_ID, user=member, reason=reason)
         await ctx.respond("Kicked " + member.mention + " Reason " + reason)
-    except:
+    finally:
         await ctx.respond("something went wrong. Error_2")
 
 
