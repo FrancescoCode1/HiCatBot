@@ -17,7 +17,6 @@ GUILD_ID = int(os.environ["DISCORD_GUILD"])
 @lightbulb.implements(lightbulb.SlashCommand)
 async def on_dbstatus(ctx: lightbulb.SlashContext) -> None:
     s = mongohandler.Mongo()
-    s.setup()
     print(s.status())
 
 

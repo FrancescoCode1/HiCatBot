@@ -7,9 +7,6 @@ import os
 dotenv.load_dotenv()
 
 PASSWORD = quote_plus(os.environ["PASSWORD"])
-cluster = '<cluster0>'
-myurl = '<authSource>'
-authMechanism = '<authMechanism>'
 
 
 class Mongo:
@@ -26,11 +23,6 @@ class Mongo:
         self.db = self.client["test"]
 
 
-"""
-def connector():
-    client = MongoClient(f"mongodb+srv://FD:" + PASSWORD + "@cluster0.fct7e.mongodb.net/")
-    db = client["test"]
-"""
 
 if __name__ == "__main__":
     print('hi')
