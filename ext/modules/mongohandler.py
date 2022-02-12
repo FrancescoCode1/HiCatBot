@@ -23,6 +23,5 @@ class Mongo:
         self.db = self.client["test"]
 
 
-
 if __name__ == "__main__":
     print('hi')
